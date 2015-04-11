@@ -26,3 +26,7 @@ very little ability to customize, e.g. to add authentication.
 Dropbox requires both parties in a shared folder to have sufficient
 Dropbox space, which is problematic when more than a few GB of data
 needs to be shared.
+
+# Setup
+## Requirements
+* [Bottle](http://bottlepy.org/docs/dev/index.html) (e.g. `pip install bottle`)

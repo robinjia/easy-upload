@@ -1,0 +1,5 @@
+# Swap files
+*.sw*
+
+# Compiled files
+*.pyc
