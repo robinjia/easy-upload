@@ -26,24 +26,22 @@ def handle_websocket():
   if not wsock:
     abort(400, 'Expected Websocket request.')
   
-  file_contents = bytearray()
-  with open('tmp_file', 'wb') as f:
+  bytes_received = 0
+  with open('/tmp/websocket.tmp', 'wb') as f:
     while True:
       try:
         message = wsock.receive()
         if message is None: break
-        file_contents.extend(message)
         f.write(message)
-        print >> sys.stderr, 'Received %d bytes' % len(message)
+        bytes_received += len(message)
+        print >> sys.stderr, 'Received %d bytes (%d total)' % (
+            len(message), bytes_received)
       except WebSocketError as e:
         print >> sys.stderr, e
         break
-  md5_hash = hashlib.md5(file_contents).hexdigest()
-  print >> sys.stderr, 'File Received, hash:'
-  print >> sys.stderr, md5_hash
-  with open('tmp_file', 'rb') as f:
+  with open('/tmp/websocket.tmp', 'rb') as f:
     print >> sys.stderr, hashlib.md5(f.read()).hexdigest()
-  subprocess.Popen(['md5sum', 'tmp_file'], )
+  subprocess.Popen(['md5sum', '/tmp/websocket.tmp'])
 
 @app.error(404)
 def error404(error):
