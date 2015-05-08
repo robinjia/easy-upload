@@ -33,3 +33,6 @@ needs to be shared.
 * [gevent](http://www.gevent.org/) (e.g. `pip install gevent`)
 * [gevent-websocket](https://pypi.python.org/pypi/gevent-websocket/)
 (e.g. `pip install gevent-websocket`)
+  * Note: gevent-websocket recommends installing
+[wsaccel](https://github.com/methane/wsaccel) and 
+[ujson](https://pypi.python.org/pypi/ujson) (e.g. `pip install wsaccel ujson`)
