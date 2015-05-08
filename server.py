@@ -1,4 +1,6 @@
 import bottle
+import hashlib
+import subprocess
 import sys
 
 from gevent.pywsgi import WSGIServer
@@ -23,15 +25,25 @@ def handle_websocket():
   wsock = bottle.request.environ.get('wsgi.websocket')
   if not wsock:
     abort(400, 'Expected Websocket request.')
-  while True:
-    try:
-      message = wsock.receive()
-      print >> sys.stderr, '==Message Received=='
-      print >> sys.stderr, message
-      print >> sys.stderr, '==End of Message=='
-    except WebSocketError as e:
-      print >> sys.stderr, e
-      break
+  
+  file_contents = bytearray()
+  with open('tmp_file', 'wb') as f:
+    while True:
+      try:
+        message = wsock.receive()
+        if message is None: break
+        file_contents.extend(message)
+        f.write(message)
+        print >> sys.stderr, 'Received %d bytes' % len(message)
+      except WebSocketError as e:
+        print >> sys.stderr, e
+        break
+  md5_hash = hashlib.md5(file_contents).hexdigest()
+  print >> sys.stderr, 'File Received, hash:'
+  print >> sys.stderr, md5_hash
+  with open('tmp_file', 'rb') as f:
+    print >> sys.stderr, hashlib.md5(f.read()).hexdigest()
+  subprocess.Popen(['md5sum', 'tmp_file'], )
 
 @app.error(404)
 def error404(error):

@@ -30,7 +30,9 @@ function Uploader(id) {
     var curStart = 0;
     var startReadCurChunk = function() {
       if (curStart < size) {
-        reader.readAsText(file.slice(curStart, curStart + CHUNK_SIZE));
+        reader.readAsArrayBuffer(file.slice(curStart, curStart + CHUNK_SIZE));
+      } else {
+        ws.close()
       }
     }
 
@@ -43,7 +45,6 @@ function Uploader(id) {
 
     /* Start the loop! */
     startReadCurChunk();
-
   }
 }
 
