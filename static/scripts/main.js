@@ -1,5 +1,5 @@
 function Uploader(id) {
-  var CHUNK_SIZE = 8192;  // Read 8kB chunks
+  var CHUNK_SIZE = 64 * 1024;  // Read 64kB chunks
 
   this.div = document.getElementById(id);
 

@@ -2,6 +2,7 @@ import bottle
 import hashlib
 import subprocess
 import sys
+import time
 
 from gevent.pywsgi import WSGIServer
 from geventwebsocket import WebSocketError
@@ -22,6 +23,7 @@ def serve_static(filepath):
 
 @app.route('/websocket')
 def handle_websocket():
+  start_time = time.time()
   wsock = bottle.request.environ.get('wsgi.websocket')
   if not wsock:
     abort(400, 'Expected Websocket request.')
@@ -39,6 +41,8 @@ def handle_websocket():
       except WebSocketError as e:
         print >> sys.stderr, e
         break
+  end_time = time.time()
+  print >> sys.stderr, 'Took %.3f seconds' % (end_time - start_time)
   with open('/tmp/websocket.tmp', 'rb') as f:
     print >> sys.stderr, hashlib.md5(f.read()).hexdigest()
   subprocess.Popen(['md5sum', '/tmp/websocket.tmp'])
