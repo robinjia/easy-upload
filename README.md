@@ -30,3 +30,6 @@ needs to be shared.
 # Setup
 ## Requirements
 * [Bottle](http://bottlepy.org/docs/dev/index.html) (e.g. `pip install bottle`)
+* [gevent](http://www.gevent.org/) (e.g. `pip install gevent`)
+* [gevent-websocket](https://pypi.python.org/pypi/gevent-websocket/)
+(e.g. `pip install gevent-websocket`)

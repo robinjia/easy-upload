@@ -1,4 +1,10 @@
 import bottle
+import sys
+
+from gevent.pywsgi import WSGIServer
+from geventwebsocket import WebSocketError
+
+from handler import UploadHandler
 
 bottle.debug(True)
 
@@ -12,8 +18,26 @@ def upload(name):
 def serve_static(filepath):
   return bottle.static_file(filepath, root='./static')
 
+@app.route('/websocket')
+def handle_websocket():
+  wsock = request.environ.get('wsgi.websocket')
+  if not wsock:
+    abort(400, 'Expected Websocket request.')
+  while True:
+    try:
+      message = wsock.receive()
+      print 'Message received: %s' % message
+    except WebSocketError as e:
+      print e
+      break
+
 @app.error(404)
 def error404(error):
   return '<h1>404 Errror</h1>'
 
-bottle.run(app, host='localhost', port=8080)
+
+if __name__ == '__main__':
+  hostname, port = ('localhost', 8080)
+  server = WSGIServer((hostname, port), app, handler_class=UploadHandler)
+  print >> sys.stderr, 'Listening on %s:%d' % (hostname, port)
+  server.serve_forever()
