@@ -12,11 +12,11 @@ Research collaborations typically require the transfer of data from one group to
 These datasets can be gigabytes, or even hundreds of gigabytes in size.
 To date, there is no good tool for transferring this much data over the network.
 
-If the receiving party trusted their collaborators, they could give htem
-ssh access to a cluster, and told to transfer their data via scp.
+If the receiving party trusted their collaborators, they could give them
+ssh access to a cluster, and tell them to transfer their data via scp.
 However, it is usually not practical to grant such server access to collaborators.
 Additionally, the sending party will often be an experimental lab,
-and may not be familiar with unix command line tools
+and may not be familiar with unix command line tools.
 
 File sharing companies like Box and Dropbox offer some help,
 but tend to impose finicky limitations.
@@ -29,10 +29,17 @@ needs to be shared.
 
 # Setup
 ## Requirements
-* [Bottle](http://bottlepy.org/docs/dev/index.html) (e.g. `pip install bottle`)
-* [gevent](http://www.gevent.org/) (e.g. `pip install gevent`)
+* [Bottle](http://bottlepy.org/docs/dev/index.html)
+* [gevent](http://www.gevent.org/)
 * [gevent-websocket](https://pypi.python.org/pypi/gevent-websocket/)
-(e.g. `pip install gevent-websocket`)
   * Note: gevent-websocket recommends installing
 [wsaccel](https://github.com/methane/wsaccel) and 
-[ujson](https://pypi.python.org/pypi/ujson) (e.g. `pip install wsaccel ujson`)
+[ujson](https://pypi.python.org/pypi/ujson)
+* [numpy](http://www.numpy.org/)
+
+Most of these are available in pip, e.g.
+
+    pip install bottle gevent gevent-websocket wsaccel ujson
+
+Numpy installation instructions can be found
+on the [scipy website](http://www.scipy.org/scipylib/download.html).

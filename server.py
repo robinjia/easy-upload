@@ -1,3 +1,4 @@
+"""Defines the upload server."""
 import bottle
 import hashlib
 import subprocess
@@ -6,8 +7,9 @@ import time
 
 from gevent.pywsgi import WSGIServer
 from geventwebsocket import WebSocketError
+from geventwebsocket.websocket import Header
 
-from handler import UploadHandler
+from util import mask_payload_fast, UploadHandler
 
 bottle.debug(True)
 
@@ -51,6 +53,11 @@ def handle_websocket():
 def error404(error):
   return '<h1>404 Errror</h1>'
 
+
+# Monkey patch geventwebsocket.websocket.Header.mask_payload() and
+# geventwebsocket.websocket.Header.unmask_payload(), for efficiency
+Header.mask_payload = mask_payload_fast
+Header.unmask_payload = mask_payload_fast
 
 if __name__ == '__main__':
   hostname, port = ('localhost', 8080)
