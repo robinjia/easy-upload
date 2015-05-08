@@ -20,15 +20,17 @@ def serve_static(filepath):
 
 @app.route('/websocket')
 def handle_websocket():
-  wsock = request.environ.get('wsgi.websocket')
+  wsock = bottle.request.environ.get('wsgi.websocket')
   if not wsock:
     abort(400, 'Expected Websocket request.')
   while True:
     try:
       message = wsock.receive()
-      print 'Message received: %s' % message
+      print >> sys.stderr, '==Message Received=='
+      print >> sys.stderr, message
+      print >> sys.stderr, '==End of Message=='
     except WebSocketError as e:
-      print e
+      print >> sys.stderr, e
       break
 
 @app.error(404)

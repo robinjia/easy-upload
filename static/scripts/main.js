@@ -2,15 +2,29 @@ function Uploader(id) {
   var CHUNK_SIZE = 8192;  // Read 8kB chunks
 
   this.div = document.getElementById(id);
+
+  /* Create file input field */
+  var fileInput = document.createElement("INPUT");
+  fileInput.setAttribute("type", "file");
+  fileInput.setAttribute("multiple", true);
+  fileInput.id = "files-input";
+  this.div.appendChild(fileInput);
+  this.fileInput = fileInput;
+
+  /* Create submit button */
+  var submit = document.createElement("BUTTON");
+  submit.type="button";
+  submit.innerHTML = "Upload";
+  submit.id = "submit-button";
+  this.div.appendChild(submit)
+
+  /* On submit, read file in chunks and send data over websocket */
   var reader = new FileReader();
   // reader.error = ;  TODO(robinjia): set this.
-  var fileUpload = document.createElement("INPUT");
-  fileUpload.setAttribute("type", "file");
-  fileUpload.setAttribute("multiple", true);
-  fileUpload.id = "files-input";
-  fileUpload.onchange = function() {
-    var file = fileUpload.files.item(0);
+  submit.onclick = function() {
+    var file = fileInput.files.item(0);
     var size = file.size;
+    var ws = new WebSocket("ws://localhost:8080/websocket");
 
     /* Start one file read operation */
     var curStart = 0;
@@ -20,9 +34,9 @@ function Uploader(id) {
       }
     }
 
-    /* When the previous read finishes, start the next read */
+    /* When the previous read finishes, send data and start the next read */
     reader.onload = function(e) {
-      console.log(reader.result);
+      ws.send(reader.result);
       curStart += CHUNK_SIZE;
       startReadCurChunk();
     }
@@ -31,13 +45,11 @@ function Uploader(id) {
     startReadCurChunk();
 
   }
-  this.div.appendChild(fileUpload);
-  this.fileUpload = fileUpload;
 }
 
     /*
-    for (var i = 0; i < fileUpload.files.length; i++) {
-      var file = fileUpload.files.item(i);
+    for (var i = 0; i < fileInput.files.length; i++) {
+      var file = fileInput.files.item(i);
       console.log(file);
       console.log(readBlob(file.slice(0, 3)));
       console.log(readBlob(file.slice(3, 6)));
