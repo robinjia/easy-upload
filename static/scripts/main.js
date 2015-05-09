@@ -4,15 +4,15 @@ function Uploader(id) {
   this.div = document.getElementById(id);
 
   /* Create file input field */
-  var fileInput = document.createElement("INPUT");
+  var fileInput = document.createElement("input");
   fileInput.setAttribute("type", "file");
-  fileInput.setAttribute("multiple", true);
+  // fileInput.setAttribute("multiple", true);
   fileInput.id = "files-input";
   this.div.appendChild(fileInput);
   this.fileInput = fileInput;
 
   /* Create submit button */
-  var submit = document.createElement("BUTTON");
+  var submit = document.createElement("button");
   submit.type="button";
   submit.innerHTML = "Upload";
   submit.id = "submit-button";

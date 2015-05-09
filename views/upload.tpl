@@ -1,6 +1,6 @@
 % rebase('base.tpl')
-<h1>Upload!</h1>
-<h3>Upload a file here:</h3>
+<h2>Upload</h2>
+<p>Welcome to our upload page!  Use this webpage to send us large files.</p>
 <div id="uploader"></div>
 <script type="text/javascript">
 //<![CDATA[

@@ -5,6 +5,7 @@
 	<head>
 		<title>{{title}}</title>
     <script type="text/javascript" src="../static/scripts/main.js" charset="utf-8"></script>
+    <link rel="stylesheet" type="text/css" href="../static/stylesheets/main.css"></link>
 	</head>
 	<body>
     {{!base}}

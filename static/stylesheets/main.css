@@ -1,0 +1,17 @@
+body {
+	font-family: Arial, sans-serif;
+	margin: 20px 30px;
+	font-size: 20px;
+}
+
+h2 {
+  font-size: 28px;
+}
+
+input {
+  font-size: 14px;
+}
+
+button {
+  font-size: 14px;
+}
