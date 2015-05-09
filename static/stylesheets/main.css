@@ -16,6 +16,10 @@ button {
   font-size: 14px;
 }
 
+div.progress {
+  max-width: 500px;
+}
+
 /* Style file input with Bootstrap CSS.
  * See http://geniuscarrier.com/how-to-style-a-html-file-upload-button-in-pure-css/ */
 .file-upload {

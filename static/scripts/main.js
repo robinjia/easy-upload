@@ -55,6 +55,25 @@ function Uploader(id) {
     var size = file.size;
     var ws = new WebSocket("ws://localhost:8080/websocket");
 
+    /* Create the progress bar */
+    var progressDiv = document.createElement("div");
+    progressDiv.className = "progress";
+    var progressBar = document.createElement("div");
+    progressBar.className = "progress-bar";
+    progressBar.setAttribute("role", "progressbar");
+    progressBar.setAttribute("aria-valuenow", "0");
+    progressBar.setAttribute("aria-valuemin", "0");
+    progressBar.setAttribute("aria-valuemax", "100");
+    progressBar.style.width = "0%";
+    progressBar.innerHTML = "0%";
+    var progressSpan = document.createElement("span");
+    progressSpan.innerHTML = "0/" + size + " bytes transferred."
+    var progressOuterDiv = document.createElement("div");
+    progressDiv.appendChild(progressBar);
+    progressOuterDiv.appendChild(progressDiv);
+    progressOuterDiv.appendChild(progressSpan);
+    mainDiv.appendChild(progressOuterDiv);
+
     /* Start one file read operation */
     var curStart = 0;
     var startReadCurChunk = function() {
@@ -68,6 +87,14 @@ function Uploader(id) {
     /* When the previous read finishes, send data and start the next read */
     reader.onload = function(e) {
       ws.send(reader.result);
+      var percentCompleted = Math.floor(curStart / size * 100);
+      progressBar.setAttribute("aria-valuenow", percentCompleted);
+      progressBar.style.width = percentCompleted + "%";
+      progressBar.innerHTML = percentCompleted + "%";
+      progressBar.style.display = "none";
+      progressBar.offsetHeight;
+      progressBar.style.display = "block";
+      // console.log(percentCompleted);
       curStart += CHUNK_SIZE;
       startReadCurChunk();
     }
