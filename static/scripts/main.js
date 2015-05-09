@@ -87,14 +87,18 @@ function Uploader(id) {
     /* When the previous read finishes, send data and start the next read */
     reader.onload = function(e) {
       ws.send(reader.result);
+
+      /* Update progress bar */
       var percentCompleted = Math.floor(curStart / size * 100);
       progressBar.setAttribute("aria-valuenow", percentCompleted);
       progressBar.style.width = percentCompleted + "%";
       progressBar.innerHTML = percentCompleted + "%";
+
+      /* Force browser to redraw the progress bar */
       progressBar.style.display = "none";
       progressBar.offsetHeight;
       progressBar.style.display = "block";
-      // console.log(percentCompleted);
+
       curStart += CHUNK_SIZE;
       startReadCurChunk();
     }

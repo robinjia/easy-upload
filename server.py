@@ -32,17 +32,19 @@ def handle_websocket():
   
   bytes_received = 0
   with open('/tmp/websocket.tmp', 'wb') as f:
-    while True:
-      try:
+    try:
+      while True:
         message = wsock.receive()
         if message is None: break
         f.write(message)
         bytes_received += len(message)
         print >> sys.stderr, 'Received %d bytes (%d total)' % (
             len(message), bytes_received)
-      except WebSocketError as e:
-        print >> sys.stderr, e
-        break
+    except WebSocketError as e:
+      print >> sys.stderr, e
+    finally:
+      print >> sys.stderr, 'Closing websocket'
+      wsock.close()
   end_time = time.time()
   print >> sys.stderr, 'Took %.3f seconds' % (end_time - start_time)
   with open('/tmp/websocket.tmp', 'rb') as f:
