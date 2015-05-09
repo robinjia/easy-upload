@@ -4,6 +4,6 @@
 <div id="uploader"></div>
 <script type="text/javascript">
 //<![CDATA[
-  new Uploader("uploader");
+  new Uploader("uploader").render();
 //]]>
 </script>

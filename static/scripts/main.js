@@ -1,37 +1,20 @@
 function Uploader(id) {
-  var CHUNK_SIZE = 1024 * 1024;  // Read 1MB chunks
+  this.CHUNK_SIZE = 1024 * 1024;  // Read 1MB chunks
+  this.mainDiv = document.getElementById(id);
+  this.reader = new FileReader();
+  // this.reader.error = ;  TODO(robinjia): set this.
+}
 
-  var mainDiv = document.getElementById(id);
+Uploader.prototype.render = function() {
+  var uploader = this;
+  var CHUNK_SIZE = this.CHUNK_SIZE;
+  var mainDiv = this.mainDiv;
+  var reader = this.reader;
 
-  /* Set up the button row */
-  var buttonDiv = document.createElement("div");
-  buttonDiv.style.marginBottom = "20px";
-  mainDiv.appendChild(buttonDiv);
-
-  /* Create file input field */
-  var fileDiv = document.createElement("div");
-  fileDiv.innerHTML = "<span>Choose File</span>";
-  fileDiv.className = "btn btn-primary file-upload";
-  var fileInput = document.createElement("input");
-  fileInput.setAttribute("type", "file");
-  // fileInput.setAttribute("multiple", true);
-  fileInput.className = "upload";
-  fileDiv.appendChild(fileInput)
-  buttonDiv.appendChild(fileDiv);
-
-  /* Create submit button */
-  var submit = document.createElement("button");
-  submit.type="button";
-  submit.innerHTML = "Start Upload";
-  submit.id = "submit-button";
-  submit.className = "btn btn-primary";
-  submit.style.display = "none";
-  buttonDiv.appendChild(submit);
-
-  /* Create field to display filename */
-  var filenameDisplay = document.createElement("p");
-  filenameDisplay.style.display = "none";
-  mainDiv.appendChild(filenameDisplay);
+  var buttonRow = this.createButtonRow();
+  var fileInput = this.createFileInput(buttonRow);
+  var submit = this.createSubmitButton(buttonRow);
+  var filenameDisplay = this.createFilenameDisplay();
 
   fileInput.onchange = function() {
     var fileList = fileInput.files;
@@ -48,38 +31,21 @@ function Uploader(id) {
   }
 
   /* On submit, read file in chunks and send data over websocket */
-  var reader = new FileReader();
-  // reader.error = ;  TODO(robinjia): set this.
   submit.onclick = function() {
     var file = fileInput.files.item(0);
-    var size = file.size;
+    var fileSize = file.size;
     var ws = new WebSocket("ws://localhost:8080/websocket");
-
-    /* Create the progress bar */
-    var progressDiv = document.createElement("div");
-    progressDiv.className = "progress";
-    var progressBar = document.createElement("div");
-    progressBar.className = "progress-bar";
-    progressBar.setAttribute("role", "progressbar");
-    progressBar.setAttribute("aria-valuenow", "0");
-    progressBar.setAttribute("aria-valuemin", "0");
-    progressBar.setAttribute("aria-valuemax", "100");
-    progressBar.style.width = "0%";
-    progressBar.innerHTML = "0%";
-    var progressSpan = document.createElement("span");
-    progressSpan.innerHTML = "0/" + size + " bytes transferred."
     var progressOuterDiv = document.createElement("div");
-    progressDiv.appendChild(progressBar);
-    progressOuterDiv.appendChild(progressDiv);
-    progressOuterDiv.appendChild(progressSpan);
+    var progressBar = new ProgressBar(progressOuterDiv, fileSize);
     mainDiv.appendChild(progressOuterDiv);
 
     /* Start one file read operation */
     var curStart = 0;
     var startReadCurChunk = function() {
-      if (curStart < size) {
+      if (curStart < fileSize) {
         reader.readAsArrayBuffer(file.slice(curStart, curStart + CHUNK_SIZE));
       } else {
+        progressBar.updateValue(fileSize);
         ws.close()
       }
     }
@@ -87,18 +53,7 @@ function Uploader(id) {
     /* When the previous read finishes, send data and start the next read */
     reader.onload = function(e) {
       ws.send(reader.result);
-
-      /* Update progress bar */
-      var percentCompleted = Math.floor(curStart / size * 100);
-      progressBar.setAttribute("aria-valuenow", percentCompleted);
-      progressBar.style.width = percentCompleted + "%";
-      progressBar.innerHTML = percentCompleted + "%";
-
-      /* Force browser to redraw the progress bar */
-      progressBar.style.display = "none";
-      progressBar.offsetHeight;
-      progressBar.style.display = "block";
-
+      progressBar.updateValue(curStart);
       curStart += CHUNK_SIZE;
       startReadCurChunk();
     }
@@ -106,6 +61,82 @@ function Uploader(id) {
     /* Start the loop! */
     startReadCurChunk();
   }
+}
+
+Uploader.prototype.createButtonRow = function() {
+  var buttonRow = document.createElement("div");
+  buttonRow.style.marginBottom = "20px";
+  this.mainDiv.appendChild(buttonRow);
+  return buttonRow;
+}
+
+Uploader.prototype.createFileInput = function(buttonRow) {
+  var fileDiv = document.createElement("div");
+  fileDiv.innerHTML = "<span>Choose File</span>";
+  fileDiv.className = "btn btn-primary file-upload";
+  var fileInput = document.createElement("input");
+  fileInput.setAttribute("type", "file");
+  // fileInput.setAttribute("multiple", true);
+  fileInput.className = "upload";
+  fileDiv.appendChild(fileInput)
+  buttonRow.appendChild(fileDiv);
+  return fileInput;
+}
+
+Uploader.prototype.createSubmitButton = function(buttonRow) {
+  var submit = document.createElement("button");
+  submit.type="button";
+  submit.innerHTML = "Start Upload";
+  submit.id = "submit-button";
+  submit.className = "btn btn-primary";
+  submit.style.display = "none";
+  buttonRow.appendChild(submit);
+  return submit;
+}
+
+Uploader.prototype.createFilenameDisplay = function() {
+  var filenameDisplay = document.createElement("p");
+  filenameDisplay.style.display = "none";
+  this.mainDiv.appendChild(filenameDisplay);
+  return filenameDisplay;
+}
+
+function ProgressBar(outerDiv, fileSize) {
+  this.outerDiv = outerDiv;
+  this.fileSize = fileSize;
+  this.init();
+}
+
+ProgressBar.prototype.init = function() {
+
+  var barOuter = document.createElement("div");
+  barOuter.className = "progress";
+  this.bar = document.createElement("div");
+  this.bar.className = "progress-bar";
+  this.bar.setAttribute("role", "progressbar");
+  this.bar.setAttribute("aria-valuemin", "0");
+  this.bar.setAttribute("aria-valuemax", "100");
+  barOuter.appendChild(this.bar);
+  this.outerDiv.appendChild(barOuter);
+
+  this.text = document.createElement("div");
+  this.outerDiv.appendChild(this.text);
+
+  this.updateValue(0);
+}
+
+ProgressBar.prototype.updateValue = function(value) {
+  this.text.innerHTML = value + "/" + this.fileSize + " bytes transferred."
+
+  var percent = Math.floor(value / this.fileSize * 100);
+  this.bar.setAttribute("aria-valuenow", percent);
+  this.bar.style.width = percent + "%";
+  this.bar.innerHTML = percent + "%";
+
+  /* Force browser to redraw progress bar */
+  this.bar.style.display = "none";
+  this.bar.offsetHeight;
+  this.bar.style.display = "block";
 }
 
     /*
