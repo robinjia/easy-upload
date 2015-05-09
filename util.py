@@ -28,12 +28,10 @@ def mask_payload_fast(self, payload):
                                    float(len(self.mask)))))[:len(payload)]
 
   # Select the type size in bytes       
-  for i in (8,4,2,1):
-    if not len(payload) % i: break
-  if i == 8: dt = numpy.dtype('<Q8');
-  elif i == 4: dt = numpy.dtype('<L4');
-  elif i == 2: dt = numpy.dtype('<H2');
-  else: dt = numpy.dtype('B');
+  if len(payload) % 8 == 0:
+    dt = numpy.dtype('<Q8')
+  else:
+    dt = numpy.dtype('B')
 
   return numpy.bitwise_xor(numpy.fromstring(key, dtype=dt),
                            numpy.fromstring(payload, dtype=dt)).tostring()
