@@ -34,7 +34,8 @@ Uploader.prototype.render = function() {
   submit.onclick = function() {
     var file = fileInput.files.item(0);
     var fileSize = file.size;
-    var ws = new WebSocket("ws://localhost:8080/websocket");
+    var ws = new WebSocket("ws://" + location.host + "/websocket");
+    console.log("Buffered amount: " + ws.bufferedAmount);
     var progressOuterDiv = document.createElement("div");
     var progressBar = new ProgressBar(progressOuterDiv, fileSize);
     mainDiv.appendChild(progressOuterDiv);
@@ -46,6 +47,7 @@ Uploader.prototype.render = function() {
         reader.readAsArrayBuffer(file.slice(curStart, curStart + CHUNK_SIZE));
       } else {
         progressBar.updateValue(fileSize);
+        console.log("Buffered amount: " + ws.bufferedAmount);
         ws.close()
       }
     }

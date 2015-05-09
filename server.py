@@ -62,7 +62,11 @@ Header.mask_payload = mask_payload_fast
 Header.unmask_payload = mask_payload_fast
 
 if __name__ == '__main__':
-  hostname, port = ('localhost', 8080)
+  if len(sys.argv) == 3:
+    hostname = sys.argv[1]
+    port = int(sys.argv[2])
+  else:
+    hostname, port = ('localhost', 8080)
   server = WSGIServer((hostname, port), app, handler_class=UploadHandler)
   print >> sys.stderr, 'Listening on %s:%d' % (hostname, port)
   server.serve_forever()
