@@ -5,7 +5,7 @@ body {
 }
 
 h2 {
-  font-size: 28px;
+  font-size: 30px;
 }
 
 input {
@@ -14,4 +14,23 @@ input {
 
 button {
   font-size: 14px;
+}
+
+/* Style file input with Bootstrap CSS.
+ * See http://geniuscarrier.com/how-to-style-a-html-file-upload-button-in-pure-css/ */
+.file-upload {
+  position: relative;
+  overflow: hidden;
+  margin-right: 10px;
+}
+
+.file-upload input.upload {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  opacity: 0;
+  filter: alpha(opacity=0);
 }

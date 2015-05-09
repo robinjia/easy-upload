@@ -1,22 +1,51 @@
 function Uploader(id) {
   var CHUNK_SIZE = 1024 * 1024;  // Read 1MB chunks
 
-  this.div = document.getElementById(id);
+  var mainDiv = document.getElementById(id);
+
+  /* Set up the button row */
+  var buttonDiv = document.createElement("div");
+  buttonDiv.style.marginBottom = "20px";
+  mainDiv.appendChild(buttonDiv);
 
   /* Create file input field */
+  var fileDiv = document.createElement("div");
+  fileDiv.innerHTML = "<span>Choose File</span>";
+  fileDiv.className = "btn btn-primary file-upload";
   var fileInput = document.createElement("input");
   fileInput.setAttribute("type", "file");
   // fileInput.setAttribute("multiple", true);
-  fileInput.id = "files-input";
-  this.div.appendChild(fileInput);
-  this.fileInput = fileInput;
+  fileInput.className = "upload";
+  fileDiv.appendChild(fileInput)
+  buttonDiv.appendChild(fileDiv);
 
   /* Create submit button */
   var submit = document.createElement("button");
   submit.type="button";
-  submit.innerHTML = "Upload";
+  submit.innerHTML = "Start Upload";
   submit.id = "submit-button";
-  this.div.appendChild(submit)
+  submit.className = "btn btn-primary";
+  submit.style.display = "none";
+  buttonDiv.appendChild(submit);
+
+  /* Create field to display filename */
+  var filenameDisplay = document.createElement("p");
+  filenameDisplay.style.display = "none";
+  mainDiv.appendChild(filenameDisplay);
+
+  fileInput.onchange = function() {
+    var fileList = fileInput.files;
+    console.log(fileList);
+    if (fileList.length == 0) {
+      submit.style.display = "none";
+      filenameDisplay.style.display = "none";
+    } else {
+      submit.style.display = "inline";
+      filenameDisplay.style.display = "block";
+      console.log(fileList.item(0));
+      $(filenameDisplay).text("Chosen file: " + fileList.item(0).name);
+    }
+  }
 
   /* On submit, read file in chunks and send data over websocket */
   var reader = new FileReader();
