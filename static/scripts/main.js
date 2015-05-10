@@ -61,7 +61,9 @@ Uploader.prototype.render = function() {
     }
 
     /* Start the loop! */
-    startReadCurChunk();
+    ws.onopen = function() {
+      startReadCurChunk();
+    }
   }
 }
 
