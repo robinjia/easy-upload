@@ -3,3 +3,6 @@
 
 # Compiled files
 *.pyc
+
+# User-defined configuration
+config.json

@@ -1,6 +1,7 @@
 """Defines the upload server."""
 import bottle
 import hashlib
+import os
 import subprocess
 import sys
 import time
@@ -9,15 +10,16 @@ from gevent.pywsgi import WSGIServer
 from geventwebsocket import WebSocketError
 from geventwebsocket.websocket import Header
 
-from util import mask_payload_fast, UploadHandler
+import util
 
 bottle.debug(True)
 
 app = bottle.Bottle()
+config = util.Config()
 
 @app.get('/upload/<name>')
 def upload(name):
-  return bottle.template('upload', title='Dror Lab')
+  return bottle.template('upload', title=config.title())
 
 @app.route('/static/<filepath:path>')
 def serve_static(filepath):
@@ -30,8 +32,9 @@ def handle_websocket():
   if not wsock:
     abort(400, 'Expected Websocket request.')
   
+  filename = os.path.join(config.write_dir(), 'websocket.tmp')
   bytes_received = 0
-  with open('/tmp/websocket.tmp', 'wb') as f:
+  with open(filename, 'wb') as f:
     try:
       while True:
         message = wsock.receive()
@@ -47,9 +50,8 @@ def handle_websocket():
       wsock.close()
   end_time = time.time()
   print >> sys.stderr, 'Took %.3f seconds' % (end_time - start_time)
-  with open('/tmp/websocket.tmp', 'rb') as f:
+  with open(filename, 'rb') as f:
     print >> sys.stderr, hashlib.md5(f.read()).hexdigest()
-  subprocess.Popen(['md5sum', '/tmp/websocket.tmp'])
 
 @app.error(404)
 def error404(error):
@@ -58,8 +60,8 @@ def error404(error):
 
 # Monkey patch geventwebsocket.websocket.Header.mask_payload() and
 # geventwebsocket.websocket.Header.unmask_payload(), for efficiency
-Header.mask_payload = mask_payload_fast
-Header.unmask_payload = mask_payload_fast
+Header.mask_payload = util.mask_payload_fast
+Header.unmask_payload = util.mask_payload_fast
 
 if __name__ == '__main__':
   if len(sys.argv) == 3:
@@ -67,6 +69,6 @@ if __name__ == '__main__':
     port = int(sys.argv[2])
   else:
     hostname, port = ('localhost', 8080)
-  server = WSGIServer((hostname, port), app, handler_class=UploadHandler)
+  server = WSGIServer((hostname, port), app, handler_class=util.UploadHandler)
   print >> sys.stderr, 'Listening on %s:%d' % (hostname, port)
   server.serve_forever()

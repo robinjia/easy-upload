@@ -1,9 +1,12 @@
 """Miscellaneous utilities."""
+import json
 import math
 import numpy
 import sys
 
 from geventwebsocket.handler import WebSocketHandler
+
+REQUIRED_CONFIG_ATTRIBUTES = ['title', 'write_dir']
 
 class UploadHandler(WebSocketHandler):
   """Slight modification to WebSocketHandler.
@@ -14,6 +17,29 @@ class UploadHandler(WebSocketHandler):
     log = self.server.log
     if log:
       log.write(self.format_request() + '\n')
+
+class Config(object):
+  """Handles server configuration.
+
+  Configuration is stored in config.json.
+  This should be a json file with the following fields:
+
+    title: Intended website title
+    write_dir: Directory to write files
+  """
+  def __init__(self, filename='config.json'):
+    with open(filename) as f:
+      self.obj = json.load(f)
+    for attr in REQUIRED_CONFIG_ATTRIBUTES:
+      if attr not in self.obj:
+        raise ValueError(
+            '%s missing required attribute "%s"' % (filename, attr))
+
+  def title(self):
+    return self.obj['title']
+
+  def write_dir(self):
+    return self.obj['write_dir']
 
 
 def mask_payload_fast(self, payload):

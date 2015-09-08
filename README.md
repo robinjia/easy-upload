@@ -37,7 +37,7 @@ needs to be shared.
 [ujson](https://pypi.python.org/pypi/ujson)
 * [numpy](http://www.numpy.org/)
 
-Most of these are available in pip, e.g.
+Most of these are available in pip, i.e.
 
     pip install bottle gevent gevent-websocket wsaccel ujson
 
