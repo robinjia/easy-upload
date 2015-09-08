@@ -117,11 +117,7 @@ Uploader.prototype.createFilenameDisplay = function() {
 function ProgressBar(outerDiv, fileSize) {
   this.outerDiv = outerDiv;
   this.fileSize = fileSize;
-  this.init();
-}
-
-ProgressBar.prototype.init = function() {
-
+  this.fileSizeStr = this.numToByteString(this.fileSize);
   var barOuter = document.createElement("div");
   barOuter.className = "progress";
   this.bar = document.createElement("div");
@@ -138,8 +134,33 @@ ProgressBar.prototype.init = function() {
   this.updateValue(0);
 }
 
+ProgressBar.prototype.numToByteString = function(value) {
+  /* Byte sizes are powers of 1000, not 1024. */
+  var amount;
+  var unit;
+  if (value < 1000) {
+    amount = value;
+    unit = "B";
+  } else if (value < 1000000) { 
+    amount = value / 1000;
+    unit = "kB"
+  } else if (value < 1000000000) { 
+    amount = value / 1000000;
+    unit = "MB";
+  } else {
+    amount = value / 1000000000;
+    unit = "GB";
+  }
+  return amount.toFixed(1) + " " + unit;
+}
+
 ProgressBar.prototype.updateValue = function(value) {
-  this.text.innerHTML = value + "/" + this.fileSize + " bytes transferred."
+  if (value == this.fileSize) {
+    this.text.innerHTML = "All " + this.fileSizeStr + " transferred.";
+  } else {
+    var valueStr = this.numToByteString(value);
+    this.text.innerHTML = valueStr + " of " + this.fileSizeStr + " transferred.";
+  }
 
   var percent = Math.floor(value / this.fileSize * 100);
   this.bar.setAttribute("aria-valuenow", percent);
