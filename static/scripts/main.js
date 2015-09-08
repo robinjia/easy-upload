@@ -46,18 +46,27 @@ Uploader.prototype.render = function() {
       if (curStart < fileSize) {
         reader.readAsArrayBuffer(file.slice(curStart, curStart + CHUNK_SIZE));
       } else {
-        progressBar.updateValue(fileSize);
-        console.log("Buffered amount: " + ws.bufferedAmount);
-        ws.close()
+        // progressBar.updateValue(fileSize);
+        // console.log("Buffered amount: " + ws.bufferedAmount);
       }
     }
 
     /* When the previous read finishes, send data and start the next read */
     reader.onload = function(e) {
       ws.send(reader.result);
-      progressBar.updateValue(curStart);
+      // progressBar.updateValue(curStart);
       curStart += CHUNK_SIZE;
       startReadCurChunk();
+    }
+
+    /* Update progress bar when the server signals that it has received data. */
+    ws.onmessage = function(e) {
+      var curBytes = parseInt(e.data);
+      console.log(curBytes)
+      progressBar.updateValue(curBytes)
+      if (curBytes == fileSize) {
+        ws.close()
+      }
     }
 
     /* Start the loop! */

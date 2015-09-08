@@ -41,6 +41,7 @@ def handle_websocket():
         if message is None: break
         f.write(message)
         bytes_received += len(message)
+        wsock.send(str(bytes_received))
         print >> sys.stderr, 'Received %d bytes (%d total)' % (
             len(message), bytes_received)
     except WebSocketError as e:
