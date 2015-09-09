@@ -2,6 +2,7 @@
 import json
 import math
 import numpy
+import re
 import sys
 
 from geventwebsocket.handler import WebSocketHandler
@@ -61,3 +62,10 @@ def mask_payload_fast(self, payload):
 
   return numpy.bitwise_xor(numpy.fromstring(key, dtype=dt),
                            numpy.fromstring(payload, dtype=dt)).tostring()
+
+def is_valid_filename(name):
+  """Checks if this is a kosher filename.
+  
+  Disallow navigation of filesystem with / or ..
+  """
+  return re.match(r'^\w[^/]*$', name) is not None

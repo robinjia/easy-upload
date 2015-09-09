@@ -32,10 +32,15 @@ def handle_websocket():
   if not wsock:
     abort(400, 'Expected Websocket request.')
   
-  filename = os.path.join(config.write_dir(), 'websocket.tmp')
   bytes_received = 0
-  with open(filename, 'wb') as f:
-    try:
+  try:
+    basename = wsock.receive()
+    if not util.is_valid_filename(basename):
+      # Abort
+      return
+    print >> sys.stderr, 'Receiving file "%s"' % basename
+    filename = os.path.join(config.write_dir(), basename)
+    with open(filename, 'wb') as f:
       while True:
         message = wsock.receive()
         if message is None: break
@@ -44,11 +49,11 @@ def handle_websocket():
         wsock.send(str(bytes_received))
         print >> sys.stderr, 'Received %d bytes (%d total)' % (
             len(message), bytes_received)
-    except WebSocketError as e:
-      print >> sys.stderr, e
-    finally:
-      print >> sys.stderr, 'Closing websocket'
-      wsock.close()
+  except WebSocketError as e:
+    print >> sys.stderr, e
+  finally:
+    print >> sys.stderr, 'Closing websocket'
+    wsock.close()
   end_time = time.time()
   print >> sys.stderr, 'Took %.3f seconds' % (end_time - start_time)
   with open(filename, 'rb') as f:

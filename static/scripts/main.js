@@ -62,15 +62,17 @@ Uploader.prototype.render = function() {
     /* Update progress bar when the server signals that it has received data. */
     ws.onmessage = function(e) {
       var curBytes = parseInt(e.data);
-      console.log(curBytes)
       progressBar.updateValue(curBytes)
       if (curBytes == fileSize) {
         ws.close()
       }
     }
 
-    /* Start the loop! */
     ws.onopen = function() {
+      /* Send the filename */
+      ws.send(file.name)
+
+      /* Start the loop! */
       startReadCurChunk();
     }
   }
