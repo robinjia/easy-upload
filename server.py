@@ -12,7 +12,7 @@ from geventwebsocket.websocket import Header
 
 import util
 
-bottle.debug(True)
+# bottle.debug(True)
 
 app = bottle.Bottle()
 config = util.Config()
