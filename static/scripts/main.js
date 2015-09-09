@@ -32,6 +32,9 @@ Uploader.prototype.render = function() {
 
   /* On submit, read file in chunks and send data over websocket */
   submit.onclick = function() {
+    var fileInputParent = fileInput.parentNode;
+    fileInputParent.setAttribute("class", fileInputParent.className + " disabled");
+    submit.setAttribute("class", submit.className + " disabled");
     var file = fileInput.files.item(0);
     var fileSize = file.size;
     var ws = new WebSocket("ws://" + location.host + "/websocket");
@@ -130,8 +133,11 @@ function ProgressBar(outerDiv, fileSize) {
   barOuter.appendChild(this.bar);
   this.outerDiv.appendChild(barOuter);
 
-  this.text = document.createElement("div");
+  this.text = document.createElement("p");
   this.outerDiv.appendChild(this.text);
+
+  this.message = document.createElement("p");
+  this.outerDiv.appendChild(this.message);
 
   this.updateValue(0);
 }
@@ -159,9 +165,11 @@ ProgressBar.prototype.numToByteString = function(value) {
 ProgressBar.prototype.updateValue = function(value) {
   if (value == this.fileSize) {
     this.text.innerHTML = "All " + this.fileSizeStr + " transferred.";
+    this.message.innerHTML = "You may safely close this window.";
   } else {
     var valueStr = this.numToByteString(value);
     this.text.innerHTML = valueStr + " of " + this.fileSizeStr + " transferred.";
+    this.message.innerHTML = "Please do not close this window until the upload is complete.";
   }
 
   var percent = Math.floor(value / this.fileSize * 100);
