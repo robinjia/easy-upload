@@ -1,4 +1,8 @@
 {
-  "title": "Dror Lab Uploader",
-  "write_dir": "/tmp"
+  "title": "My Uploader",
+  "text": "Welcome to my upload page!  Use this webpage to send me large files.",
+  "write_dir": "/tmp",
+  "owner": "username",
+  "group": "groupname",
+  "chmod": "664"
 }
