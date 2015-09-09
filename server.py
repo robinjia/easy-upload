@@ -52,6 +52,9 @@ def handle_websocket():
   except WebSocketError as e:
     print >> sys.stderr, e
   finally:
+    if config.chmod():
+      os.chmod(filename, config.chmod())
+    os.chown(filename, config.owner_id(), config.group_id())
     print >> sys.stderr, 'Closing websocket'
     wsock.close()
   end_time = time.time()
