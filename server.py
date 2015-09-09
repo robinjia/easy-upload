@@ -17,8 +17,8 @@ bottle.debug(True)
 app = bottle.Bottle()
 config = util.Config()
 
-@app.get('/upload/<name>')
-def upload(name):
+@app.get('/upload')
+def upload():
   return bottle.template('upload', title=config.title())
 
 @app.route('/static/<filepath:path>')
