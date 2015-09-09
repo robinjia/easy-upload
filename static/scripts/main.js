@@ -143,20 +143,20 @@ function ProgressBar(outerDiv, fileSize) {
 }
 
 ProgressBar.prototype.numToByteString = function(value) {
-  /* Byte sizes are powers of 1000, not 1024. */
+  /* Use powers of 1024. */
   var amount;
   var unit;
-  if (value < 1000) {
+  if (value < 1024) {
     amount = value;
     unit = "B";
-  } else if (value < 1000000) { 
-    amount = value / 1000;
+  } else if (value < 1024 * 1024) { 
+    amount = value / 1024;
     unit = "kB"
-  } else if (value < 1000000000) { 
-    amount = value / 1000000;
+  } else if (value < 1024 * 1024 * 1024) { 
+    amount = value / (1024 * 1024);
     unit = "MB";
   } else {
-    amount = value / 1000000000;
+    amount = value / (1024 * 1024 * 1024);
     unit = "GB";
   }
   return amount.toFixed(1) + " " + unit;
