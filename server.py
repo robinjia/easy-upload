@@ -19,7 +19,7 @@ config = util.Config()
 
 @app.get('/upload')
 def upload():
-  return bottle.template('upload', title=config.title())
+  return bottle.template('upload', title=config.title(), text=config.text())
 
 @app.route('/static/<filepath:path>')
 def serve_static(filepath):

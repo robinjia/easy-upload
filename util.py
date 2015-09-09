@@ -10,7 +10,7 @@ import sys
 
 from geventwebsocket.handler import WebSocketHandler
 
-REQUIRED_CONFIG_ATTRIBUTES = ['title', 'write_dir']
+REQUIRED_CONFIG_ATTRIBUTES = ['title', 'text', 'write_dir']
 
 class UploadHandler(WebSocketHandler):
   """Slight modification to WebSocketHandler.
@@ -29,6 +29,7 @@ class Config(object):
   This should be a json file with the following fields:
 
     title: Intended website title
+    text: Description text to display on the webpage.
     write_dir: Directory to write files
 
   Optional fields include:
@@ -64,6 +65,9 @@ class Config(object):
 
   def title(self):
     return self.obj['title']
+
+  def text(self):
+    return self.obj['text']
 
   def write_dir(self):
     return self.obj['write_dir']
