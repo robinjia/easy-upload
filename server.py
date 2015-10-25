@@ -64,7 +64,7 @@ def handle_websocket():
 
 @app.error(404)
 def error404(error):
-  return '<h1>404 Errror</h1>'
+  return '<h1>404 Error</h1>'
 
 
 # Monkey patch geventwebsocket.websocket.Header.mask_payload() and
